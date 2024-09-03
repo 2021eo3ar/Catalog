@@ -49,7 +49,7 @@ const generateInvestmentData = (range = '1w') => {
     comments: faker.lorem.sentences(2),
     performanceTrend: faker.lorem.words(3),
   };
-
+  console.log(statistics, analysis);
   return {
     summary,
     chartData,
