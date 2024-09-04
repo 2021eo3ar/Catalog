@@ -14,13 +14,13 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, annotationPlugin);
 
-const Chart = ({ chartData }) => {
+const Chart = ({ chartData, totalInvestedAmount }) => {
   // Check if chartData is defined and has the necessary properties
   if (!chartData || !chartData.datasets || !chartData.labels) {
     return <div>Loading...</div>; // or handle error state appropriately
   }
 
-  const investedAmount = chartData.datasets[0].data[chartData.datasets[0].data.length - 1];
+  const investedAmount = totalInvestedAmount || chartData.datasets[0].data[chartData.datasets[0].data.length - 1];
 
   // Plugin to draw dashed lines on hover
   const hoverPlugin = {
@@ -103,13 +103,13 @@ const Chart = ({ chartData }) => {
         annotations: {
           investedAmountLabel: {
             type: 'label',
-            xValue: chartData.labels[chartData.labels.length - 1],
+            xValue: chartData.labels.length, // Move it after the last label
             yValue: investedAmount,
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             borderColor: 'blue',
             borderRadius: 4,
             borderWidth: 1,
-            content: [`Invested: $${parseFloat(investedAmount).toLocaleString()}`],
+            content: [`$${parseFloat(investedAmount).toLocaleString()}`],
             color: 'white',
             font: {
               size: 12,
@@ -122,7 +122,8 @@ const Chart = ({ chartData }) => {
               right: 10,
             },
             position: 'end',
-            xAdjust: 50,
+            display: true,
+            xAdjust: 50, // Offset the label to appear strictly after the last point
             yAdjust: -10,
           },
         },
@@ -130,13 +131,17 @@ const Chart = ({ chartData }) => {
     },
     elements: {
       line: {
-        tension: 0.5,
+        tension: 0.4, // You can tweak the line smoothness
+        borderWidth: 2,
+        borderColor: 'blue', // Line color
+        backgroundColor: 'rgba(0, 0, 255, 0.2)', // Semi-transparent blue fill under the line
+        fill: true, // Ensure fill is enabled here
       },
       point: {
         radius: function (context) {
           const index = context.dataIndex;
           const totalPoints = context.dataset.data.length;
-          return index === totalPoints - 1 ? 8 : 4;
+          return index === totalPoints - 1;
         },
         backgroundColor: function (context) {
           const index = context.dataIndex;
@@ -145,6 +150,7 @@ const Chart = ({ chartData }) => {
         },
       },
     },
+    
     // Interaction configuration to trigger hover
     interaction: {
       mode: 'nearest',
@@ -156,9 +162,9 @@ const Chart = ({ chartData }) => {
     ...chartData,
     datasets: chartData.datasets.map((dataset) => ({
       ...dataset,
-      borderColor: 'blue',
-      backgroundColor: 'rgba(0, 0, 255, 0.2)',
-      fill: true,
+      borderColor: 'blue', // Line color
+      backgroundColor: 'rgba(0, 0, 255, 0.2)', // Semi-transparent blue fill
+      fill: true, // Ensure the area under the line is filled
       pointBorderColor: 'blue',
       pointBackgroundColor: 'white',
     })),

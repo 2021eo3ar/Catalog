@@ -1,6 +1,13 @@
-# React + Vite
+# The TechStack used for this Project
+- React.js
+- faker.js
+- chart.js
+- react icons
+- tailwind CSS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## To run this project clone it first and then run this command
+- `` npm i`` 
+- `` npm run dev``
 
 Currently, two official plugins are available:
 
